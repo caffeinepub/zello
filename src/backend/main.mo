@@ -9,9 +9,9 @@ import Array "mo:core/Array";
 import Random "mo:core/Random";
 import Map "mo:core/Map";
 import Char "mo:core/Char";
-import Migration "migration";
 
-(with migration = Migration.run)
+
+
 actor {
   let sessions = Map.empty<Text, Session>();
 

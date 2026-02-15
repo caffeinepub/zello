@@ -1,95 +1,33 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-15T03:52:08.955Z",
+  "generatedAt": "2026-02-15T03:57:36.638Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 5,
-    "implemented": 4,
+    "total": 1,
+    "implemented": 1,
     "items": [
       {
-        "id": "REQ-12",
-        "summary": "Update the Create Session UX so that after a user enters their name and creates a session, the landing page clearly shows a “Code generated” confirmation with the generated code, provides a copy-to-clipboard option, shows a “Session created” confirmation state, and does not automatically enter the chat until the user explicitly chooses to join.",
+        "id": "REQ-17",
+        "summary": "Update the landing page footer copy so the attribution text reads \"by echu ❤️\" (replacing the existing \"by Ishu\"), and remove the heart icon that currently appears between the words \"with\" and \"using\" in the phrase \"Built with [heart] using caffeine.ai\". Keep all other footer text in English and preserve the existing caffeine.ai link URL and tracking parameters.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/pages/LandingPage.tsx",
-          "frontend/src/components/actions/CopyCodeButton.tsx"
+          "frontend/src/pages/LandingPage.tsx"
         ],
         "matchedFiles": [
           "frontend/src/pages/LandingPage.tsx"
-        ]
-      },
-      {
-        "id": "REQ-13",
-        "summary": "Add support for sending image and file attachments as chat messages by extending the backend message model to carry either text content or an attachment payload (including filename, MIME type, and data), and enforce reasonable per-message size limits to prevent oversized payloads.",
-        "status": "unknown",
-        "plannedFiles": [],
-        "matchedFiles": []
-      },
-      {
-        "id": "REQ-14",
-        "summary": "Update the chat UI to allow users to attach and send (a) photos/images and (b) generic files as messages, including basic previews in the message list (image thumbnail for images, filename + download/open control for files).",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/hooks/useSessionPolling.ts",
-          "frontend/src/components/chat/AttachmentComposer.tsx",
-          "frontend/src/lib/attachments.ts",
-          "frontend/src/pages/ChatPage.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/hooks/useSessionPolling.ts",
-          "frontend/src/components/chat/AttachmentComposer.tsx",
-          "frontend/src/lib/attachments.ts",
-          "frontend/src/pages/ChatPage.tsx"
-        ]
-      },
-      {
-        "id": "REQ-15",
-        "summary": "Support sending and displaying clickable links in chat: messages containing URLs should render those URLs as clickable anchors with safe attributes, while preserving normal text rendering for non-URL content.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/lib/linkify.tsx",
-          "frontend/src/pages/ChatPage.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/lib/linkify.tsx",
-          "frontend/src/pages/ChatPage.tsx"
-        ]
-      },
-      {
-        "id": "REQ-16",
-        "summary": "Add a “video call handoff” capability for a session: participants can add/set a video call URL for the session, and all participants can see and open the current video call URL from within the chat UI.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/hooks/useSessionPolling.ts",
-          "frontend/src/pages/ChatPage.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/hooks/useSessionPolling.ts",
-          "frontend/src/pages/ChatPage.tsx"
         ]
       }
     ]
   },
   "changedFiles": [
-    "backend/main.mo",
-    "backend/migration.mo",
     "build-request.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/src/backend.d.ts",
-    "frontend/src/backend.ts",
-    "frontend/src/components/chat/AttachmentComposer.tsx",
-    "frontend/src/declarations/backend.did.d.ts",
-    "frontend/src/declarations/backend.did.js",
-    "frontend/src/hooks/useSessionPolling.ts",
-    "frontend/src/lib/attachments.ts",
-    "frontend/src/lib/linkify.tsx",
-    "frontend/src/pages/ChatPage.tsx",
     "frontend/src/pages/LandingPage.tsx",
     "project_state.json",
     "scratch/component-selection.json",

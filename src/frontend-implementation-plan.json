@@ -1,106 +1,22 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Chat UX upgrades: create-session confirmation, attachments, link rendering, and video-call handoff",
+  "title": "Update landing page footer attribution and remove extra heart icon",
   "requirements": [
     {
-      "id": "REQ-12",
-      "summary": "Revise Create Session flow to show clear code-generated confirmation with copy, show session-created state, and require explicit join action before entering chat.",
+      "id": "REQ-17",
+      "summary": "Adjust Landing page footer attribution to \"by echu ❤️\" and remove the heart icon between “with” and “using” while preserving the caffeine.ai link URL/UTM parameters and other English copy.",
       "acceptanceCriteria": [
-        "After Create Session succeeds, the UI displays a labeled confirmation section including the text “Code generated” and the generated session code.",
-        "A visible control allows copying the generated code to the clipboard and provides success feedback.",
-        "The app does not auto-navigate into the chat immediately after session creation; instead, it shows a “Session created” confirmation and a clear “Join session” (or equivalent) action.",
-        "Clicking the explicit join action transitions into the chat for the newly created session and persists the session in storage as before.",
-        "All user-facing text for this flow is in English."
+        "On the Landing page, the footer no longer renders a heart icon between the words \"with\" and \"using\".",
+        "On the Landing page, the footer attribution text is exactly \"by echu ❤️\" (including the heart after echu).",
+        "The caffeine.ai link in the footer remains present and continues to use the existing href format with the same UTM parameters.",
+        "All user-facing footer text remains in English."
       ],
       "file_operations": [
         {
           "path": "frontend/src/pages/LandingPage.tsx",
           "operation": "modify",
-          "description": "Update Create Session logic to stop auto-transitioning into chat after creation; introduce an explicit “Join session” action that triggers onSessionStart only when clicked. Update the confirmation UI to include the exact label text “Code generated”, show the generated code, display a “Session created” confirmation state, and keep all user-facing strings in English. Continue using the existing CopyCodeButton component for copy-to-clipboard feedback (verify the component's usage instructions before implementing)."
-        },
-        {
-          "path": "frontend/src/components/actions/CopyCodeButton.tsx",
-          "operation": "modify",
-          "description": "Ensure copy success feedback is clearly visible/accessible for the Create Session confirmation section (e.g., tooltip/aria-label/state text if needed) while preserving the existing behavior. This supports the “copy-to-clipboard option” requirement (verify the component's usage instructions before implementing)."
-        }
-      ]
-    },
-    {
-      "id": "REQ-14",
-      "summary": "Add chat attachment sending for images and generic files with pre-send preview/removal and message list rendering for images/files, including size/error handling.",
-      "acceptanceCriteria": [
-        "Chat input area includes an attachment control that lets the user pick an image or file from their device.",
-        "Before sending, the user can see what will be sent (image preview for images; filename for files) and can remove/cancel the attachment before sending.",
-        "Sent image messages render an inline preview in the message list (thumbnail or constrained-size image).",
-        "Sent file messages render with filename and a control to download/open the file from the browser.",
-        "If an attachment is too large or fails to send, the UI shows a clear English error message and does not lose the typed text unnecessarily."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/hooks/useSessionPolling.ts",
-          "operation": "modify",
-          "description": "Extend the sendMessage helper to support both text-only and attachment messages by accepting optional attachment input, converting picked File data into the Attachment shape expected by the backend interface (Uint8Array + filename + mimeType), and calling the backend sendMessage with the required arguments (including displayName, and passing null where appropriate). Add a frontend-side max size check and return clear English errors when exceeded; keep the existing polling approach unchanged."
-        },
-        {
-          "path": "frontend/src/components/chat/AttachmentComposer.tsx",
-          "operation": "create",
-          "description": "Create a reusable chat input composer that provides an attachment picker (image/file), pre-send preview (thumbnail for images; filename for files), and a remove/cancel control. Use existing shadcn/ui primitives already present in the repo (e.g., Button/Input) to match styling (verify the component's usage instructions before implementing). Ensure the component exposes callbacks so ChatPage can send text, attachments, or both appropriately."
-        },
-        {
-          "path": "frontend/src/lib/attachments.ts",
-          "operation": "create",
-          "description": "Add attachment utilities: file-to-Uint8Array conversion, MIME/type helpers (isImage), safe creation of Blob/object URLs for displaying received attachment bytes, and a shared max-attachment-size constant used by the UI for validation and error messaging."
-        },
-        {
-          "path": "frontend/src/pages/ChatPage.tsx",
-          "operation": "modify",
-          "description": "Wire the new AttachmentComposer into the chat input area so users can pick, preview, remove, and send attachments. Update message rendering to support messages with attachment payloads: show an inline constrained image preview for image attachments, and show filename plus a download/open control for generic files. Ensure oversized-attachment and send failures show clear English errors and that typed text is not lost unnecessarily. Verify the component's usage instructions before implementing."
-        }
-      ]
-    },
-    {
-      "id": "REQ-15",
-      "summary": "Render URLs in chat messages as safe clickable links while leaving non-URL text unchanged.",
-      "acceptanceCriteria": [
-        "When a message contains an http(s) URL, the URL is rendered as a clickable link in the message bubble.",
-        "Links open in a new tab/window and use safe attributes (e.g., rel=\"noopener noreferrer\").",
-        "Messages without URLs render exactly as normal text (no unwanted formatting changes).",
-        "All user-facing text remains in English."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/lib/linkify.tsx",
-          "operation": "create",
-          "description": "Create a small utility that converts message text into React nodes with http(s) URLs rendered as anchors using safe attributes (target=\"_blank\" and rel=\"noopener noreferrer\"), while preserving normal text rendering when no URLs are present."
-        },
-        {
-          "path": "frontend/src/pages/ChatPage.tsx",
-          "operation": "modify",
-          "description": "Update text message rendering to use the linkify utility so URLs become clickable links with safe attributes, while non-URL content remains unchanged. Ensure this applies only to text content (not to file/image attachment UI)."
-        }
-      ]
-    },
-    {
-      "id": "REQ-16",
-      "summary": "Add video call URL handoff UI in chat to set/update a session video call link and display/open the current link for all participants.",
-      "acceptanceCriteria": [
-        "Backend stores an optional videoCallUrl (or equivalent) as part of session state and exposes it in session data retrieval.",
-        "Backend provides a method to set/update the session’s videoCallUrl (with basic validation such as requiring http(s)).",
-        "Chat UI provides a clear control to set/update the video call link (English labels).",
-        "When a video call link is set, all participants see a prominent UI element showing the link and a button to open it.",
-        "The feature uses only a user-provided URL (no embedded third-party SDK or real-time calling integration is required)."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/hooks/useSessionPolling.ts",
-          "operation": "modify",
-          "description": "Add a setVideoCallUrl helper that calls the backend’s setVideoCallUrl capability and then refreshes session data using the existing React Query polling/invalidation approach. Surface loading/error state to the UI so ChatPage can show clear English feedback."
-        },
-        {
-          "path": "frontend/src/pages/ChatPage.tsx",
-          "operation": "modify",
-          "description": "Add a prominent “Video call” section within the chat UI: display the current session video call URL (from sessionData.currentVideoCallUrl) when present and provide an “Open” action that opens in a new tab with safe attributes. Add a clear control to set/update the URL (http/https only) for participants, calling the hook helper and showing English validation/errors. Use existing shadcn/ui components for controls/inputs where appropriate (verify the component's usage instructions before implementing)."
+          "description": "Update the footer text: (1) remove the inline Heart icon currently rendered between “Built with” and “using”, including removing its lucide-react import if no longer used, and (2) change the attribution from \"by Ishu\" to exactly \"by echu ❤️\". Preserve the existing caffeine.ai link href template and its UTM parameters unchanged, and keep the rest of the footer copy in English."
         }
       ]
     }

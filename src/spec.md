@@ -1,13 +1,10 @@
 # Specification
 
 ## Summary
-**Goal:** Improve session creation confirmation flow and enhance chat with attachments, clickable links, and a video-call URL handoff.
+**Goal:** Correct the landing page footer attribution text and remove an unintended heart icon while keeping the existing caffeine.ai link intact.
 
 **Planned changes:**
-- Update Create Session flow to show a “Code generated” confirmation with the session code, provide copy-to-clipboard with success feedback, show a “Session created” state, and require an explicit “Join session” action to enter chat.
-- Extend backend message model to support either text or attachment payloads (filename, MIME type, data), including enforcing a maximum per-message payload size with clear errors.
-- Update chat UI to attach/send images and files, show pre-send previews with ability to remove/cancel, and render sent attachments (inline image preview; file row with filename + open/download).
-- Render http(s) URLs in chat messages as clickable links with safe attributes while leaving non-URL text unchanged.
-- Add session-level video call handoff: backend stores an optional videoCallUrl and exposes a method to set/update it (http(s) validation); chat UI allows setting/updating and prominently shows/opening the current link.
+- Change the footer attribution copy from "by Ishu" to exactly "by echu ❤️".
+- Remove the heart icon currently displayed between the words "with" and "using" in "Built with … using caffeine.ai", without altering the caffeine.ai link URL/UTM parameters.
 
-**User-visible outcome:** Users can create a session and clearly see/copy the generated code before choosing to join; in chat they can send images/files, see basic previews, click links, and share/open a session video-call URL from within the chat.
+**User-visible outcome:** The landing page footer shows the updated attribution "by echu ❤️" and no longer displays a heart icon between “with” and “using”, while the caffeine.ai link remains unchanged.

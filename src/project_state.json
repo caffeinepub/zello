@@ -1,10 +1,11 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 7,
+  "projectStateVersion": 9,
   "summary": "Rebuild ZELLO from scratch as a simple no-login web chat: users can create a session with an auto-generated code or join via code, with up to 6 participants, join notifications, typing indicators, and visible timestamps.",
   "architectural_notes": [],
   "known_issues": [
-    "Create Session flow fails with error 'anonymous principals cannot create sessions' even after entering a display name; session/code is not created"
+    "Create Session flow fails with error 'anonymous principals cannot create sessions' even after entering a display name; session/code is not created",
+    "Footer copy update not applied: user requests changing attribution from \"by Ishu\" to \"by echu ❤️\" and removing the heart between \"with\" and \"using\""
   ],
   "isFixRequest": true,
   "existing_features": [
@@ -117,6 +118,14 @@
       "title": "Add a “video call handoff” capability for a session: participants can add/set a video call URL for the session, and all participants can see and open the current video call URL from within the chat UI.",
       "reqIds": [
         "REQ-16"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-landing-page-footer-copy-so-the-attribution-text-reads-by-echu-replacing-the-existing-by-ishu-and-remove-the-heart-icon-that-currently-appears-between-the-words-with-and-using-in-the-phrase-built-with-heart-using-caffeine-ai-keep-all-other-footer-text-in-english-and-preserve-the-existing-caffeine-ai-link-url-and-tracking-parameters",
+      "title": "Update the landing page footer copy so the attribution text reads \"by echu ❤️\" (replacing the existing \"by Ishu\"), and remove the heart icon that currently appears between the words \"with\" and \"using\" in the phrase \"Built with [heart] using caffeine.ai\". Keep all other footer text in English and preserve the existing caffeine.ai link URL and tracking parameters.",
+      "reqIds": [
+        "REQ-17"
       ],
       "version": 1
     }

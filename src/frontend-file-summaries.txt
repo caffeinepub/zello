@@ -1,6 +1,6 @@
 {
   "frontend/src/App.tsx": "Main app component that manages session state including participantId and conditionally renders LandingPage or ChatPage based on active session stored in sessionStorage.",
-  "frontend/src/pages/LandingPage.tsx": "Two-column landing page with Create/Join session forms; Create Session now shows \"Code generated\" label with copy button, \"Session created\" confirmation, and explicit \"Join session\" button before entering chat.",
+  "frontend/src/pages/LandingPage.tsx": "Two-column landing page with Create/Join session forms; Create Session shows \"Code generated\" label with copy button, \"Session created\" confirmation, and explicit \"Join session\" button before entering chat; footer attribution updated to \"by echu ❤️\" with heart icon removed between \"with\" and \"using\".",
   "frontend/src/pages/ChatPage.tsx": "Full chat interface with message list, attachment support (images/files with preview and download using proper Uint8Array conversion), clickable URL links, video call URL setting/display, and participant sidebar.",
   "frontend/src/components/chat/ParticipantList.tsx": "Displays list of session participants with online status and typing indicators, using participantId for \"(you)\" marker and identity comparison.",
   "frontend/src/components/chat/TypingDots.tsx": "Animated three-dot typing indicator component using Tailwind CSS animations.",

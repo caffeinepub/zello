@@ -2,8 +2,8 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-update-the-create-session-ux-so-that-after-a-user-enters-their-name-and-creates-a-session-the-landing-page-clearly-shows-a-code-generated-confirmation-with-the-generated-code-provides-a-copy-to-clipboard-option-shows-a-session-created-confirmation-state-and-does-not-automatically-enter-the-chat-until-the-user-explicitly-chooses-to-join",
-      "featureTitle": "Update the Create Session UX so that after a user enters their name and creates a session, the landing page clearly shows a “Code generated” confirmation with the generated code, provides a copy-to-clipboard option, shows a “Session created” confirmation state, and does not automatically enter the chat until the user explicitly chooses to join.",
+      "featureId": "feature-update-the-landing-page-footer-copy-so-the-attribution-text-reads-by-echu-replacing-the-existing-by-ishu-and-remove-the-heart-icon-that-currently-appears-between-the-words-with-and-using-in-the-phrase-built-with-heart-using-caffeine-ai-keep-all-other-footer-text-in-english-and-preserve-the-existing-caffeine-ai-link-url-and-tracking-parameters",
+      "featureTitle": "Update the landing page footer copy so the attribution text reads \"by echu ❤️\" (replacing the existing \"by Ishu\"), and remove the heart icon that currently appears between the words \"with\" and \"using\" in the phrase \"Built with [heart] using caffeine.ai\". Keep all other footer text in English and preserve the existing caffeine.ai link URL and tracking parameters.",
       "files": [
         "frontend/src/pages/LandingPage.tsx"
       ],
@@ -15,66 +15,7 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-12"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-update-the-chat-ui-to-allow-users-to-attach-and-send-a-photos-images-and-b-generic-files-as-messages-including-basic-previews-in-the-message-list-image-thumbnail-for-images-filename-download-open-control-for-files",
-      "featureTitle": "Update the chat UI to allow users to attach and send (a) photos/images and (b) generic files as messages, including basic previews in the message list (image thumbnail for images, filename + download/open control for files).",
-      "files": [
-        "frontend/src/components/chat/AttachmentComposer.tsx",
-        "frontend/src/hooks/useSessionPolling.ts",
-        "frontend/src/lib/attachments.ts",
-        "frontend/src/pages/ChatPage.tsx"
-      ],
-      "components": [
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-14"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-support-sending-and-displaying-clickable-links-in-chat-messages-containing-urls-should-render-those-urls-as-clickable-anchors-with-safe-attributes-while-preserving-normal-text-rendering-for-non-url-content",
-      "featureTitle": "Support sending and displaying clickable links in chat: messages containing URLs should render those URLs as clickable anchors with safe attributes, while preserving normal text rendering for non-URL content.",
-      "files": [
-        "frontend/src/lib/linkify.tsx",
-        "frontend/src/pages/ChatPage.tsx"
-      ],
-      "components": [
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-15"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-add-a-video-call-handoff-capability-for-a-session-participants-can-add-set-a-video-call-url-for-the-session-and-all-participants-can-see-and-open-the-current-video-call-url-from-within-the-chat-ui",
-      "featureTitle": "Add a “video call handoff” capability for a session: participants can add/set a video call URL for the session, and all participants can see and open the current video call URL from within the chat UI.",
-      "files": [
-        "frontend/src/hooks/useSessionPolling.ts",
-        "frontend/src/pages/ChatPage.tsx"
-      ],
-      "components": [
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-16"
+        "REQ-17"
       ],
       "confidence": "high"
     }

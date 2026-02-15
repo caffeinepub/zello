@@ -5,7 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useActor } from '../hooks/useActor';
 import { storeSession, getOrCreateParticipantId } from '../lib/sessionStorage';
-import { Loader2, MessageSquare, Heart, CheckCircle2 } from 'lucide-react';
+import { Loader2, MessageSquare, CheckCircle2 } from 'lucide-react';
 import CopyCodeButton from '../components/actions/CopyCodeButton';
 import InlineError from '../components/feedback/InlineError';
 
@@ -266,7 +266,7 @@ export default function LandingPage({ onSessionStart }: LandingPageProps) {
       <footer className="border-t-2 border-primary/20 bg-gradient-to-r from-primary/5 via-secondary/5 to-accent/5 py-8 mt-12">
         <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
           <p>
-            © {new Date().getFullYear()} · Built with <Heart className="inline h-4 w-4 text-primary fill-primary" /> using{' '}
+            © {new Date().getFullYear()} · Built with using{' '}
             <a
               href={`https://caffeine.ai/?utm_source=Caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(
                 typeof window !== 'undefined' ? window.location.hostname : 'zello-app'
@@ -277,7 +277,7 @@ export default function LandingPage({ onSessionStart }: LandingPageProps) {
             >
               caffeine.ai
             </a>
-            {' · '}by Ishu
+            {' · '}by echu ❤️
           </p>
         </div>
       </footer>
