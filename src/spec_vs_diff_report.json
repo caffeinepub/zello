@@ -1,0 +1,62 @@
+{
+  "kind": "spec_vs_diff_report",
+  "version": "1.0",
+  "generatedAt": "2026-02-15T03:52:08.951Z",
+  "summary": "Diff implements most requested frontend UX changes (Create Session confirmation + explicit Join), link rendering, attachment picking/composing, and adds session/message model fields for attachments and video-call URL. However, the diff summary does not provide enough evidence that the backend enforces attachment size limits with a clear error or that the backend exposes/validates a video-call URL update API; several additional non-requested files/changes were also introduced (migration + theme/styling/placeholder hook).",
+  "missing_requirements": [
+    {
+      "id": "REQ-13",
+      "requirement": "Backend rejects attachment messages that exceed a defined maximum payload size with a clear error message.",
+      "reason": "While backend/main.mo defines MAX_ATTACHMENT_SIZE and adds Attachment fields, the diff summary does not show sendMessage (or equivalent) performing a size check and returning/trapping with a clear error when exceeded.",
+      "evidence": [
+        "backend/main.mo"
+      ]
+    },
+    {
+      "id": "REQ-16",
+      "requirement": "Backend provides a method to set/update the session’s videoCallUrl with basic validation (requiring http(s)) and exposes it in session data retrieval.",
+      "reason": "Frontend calls actor.setVideoCallUrl and Session/SessionData include currentVideoCallUrl, but the diff summary for backend/main.mo is truncated before showing any setVideoCallUrl implementation or validation, and does not show getSessionData returning the field.",
+      "evidence": [
+        "backend/main.mo",
+        "frontend/src/hooks/useSessionPolling.ts"
+      ]
+    }
+  ],
+  "hallucinated_features": [
+    {
+      "description": "Added a backend state migration module.",
+      "reason": "BuildRequest did not request adding a migration system/module; this is additional functionality beyond stated requirements.",
+      "evidence": [
+        "backend/migration.mo",
+        "backend/main.mo"
+      ]
+    },
+    {
+      "description": "Global theme/styling updates (OKLCH color system, Tailwind config adjustments).",
+      "reason": "BuildRequest focuses on attachments, links, video-call handoff, and Create Session UX; global styling changes are not requested.",
+      "evidence": [
+        "frontend-file-summaries.txt"
+      ]
+    },
+    {
+      "description": "Added a placeholder React Query hooks file.",
+      "reason": "Not requested as part of the requirements; described as a placeholder rather than implementing a specified feature.",
+      "evidence": [
+        "frontend-file-summaries.txt"
+      ]
+    }
+  ],
+  "confidence": 0.66,
+  "changed_files": [
+    "backend/main.mo",
+    "backend/migration.mo",
+    "frontend-file-summaries.txt",
+    "frontend/src/components/chat/AttachmentComposer.tsx",
+    "frontend/src/hooks/useSessionPolling.ts",
+    "frontend/src/lib/attachments.ts",
+    "frontend/src/lib/linkify.tsx",
+    "frontend/src/pages/ChatPage.tsx",
+    "frontend/src/pages/LandingPage.tsx",
+    "project_state.json"
+  ]
+}

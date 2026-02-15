@@ -1,0 +1,235 @@
+{
+  "schemaVersion": "1.0.0",
+  "projectStateVersion": 7,
+  "summary": "Rebuild ZELLO from scratch as a simple no-login web chat: users can create a session with an auto-generated code or join via code, with up to 6 participants, join notifications, typing indicators, and visible timestamps.",
+  "architectural_notes": [],
+  "known_issues": [
+    "Create Session flow fails with error 'anonymous principals cannot create sessions' even after entering a display name; session/code is not created"
+  ],
+  "isFixRequest": true,
+  "existing_features": [
+    {
+      "id": "feature-create-a-no-login-landing-page-with-a-simple-two-column-layout-1-create-session-column-with-inputs-for-display-name-and-a-button-to-generate-a-new-session-code-and-enter-the-chat-2-join-session-column-with-inputs-for-display-name-session-code-and-a-button-to-join-the-chat",
+      "title": "Create a no-login landing page with a simple two-column layout: (1) Create Session column with inputs for Display Name and a button to generate a new session code and enter the chat; (2) Join Session column with inputs for Display Name + Session Code and a button to join the chat.",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-in-session-group-chat-participants-can-send-messages-to-the-session-and-retrieve-messages-each-message-must-include-sender-display-name-and-a-visible-timestamp",
+      "title": "Implement in-session group chat: participants can send messages to the session and retrieve messages; each message must include sender display name and a visible timestamp.",
+      "reqIds": [
+        "REQ-3"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-show-participant-presence-and-join-notifications-existing-participants-should-see-when-a-new-person-enters-the-session-and-the-ui-should-display-the-current-participant-list",
+      "title": "Show participant presence and join notifications: existing participants should see when a new person enters the session, and the UI should display the current participant list.",
+      "reqIds": [
+        "REQ-4"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-typing-indicators-instagram-style-when-a-participant-is-typing-other-participants-should-see-a-small-animated-dots-indicator-under-that-participant-s-name-and-typing-state-should-expire-automatically-after-a-short-inactivity-window",
+      "title": "Add typing indicators (Instagram-style): when a participant is typing, other participants should see a small animated dots indicator under that participant’s name, and typing state should expire automatically after a short inactivity window.",
+      "reqIds": [
+        "REQ-5"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-basic-session-ux-safeguards-validate-inputs-display-clear-errors-invalid-code-full-session-session-not-found-and-provide-a-simple-way-to-copy-share-the-session-code-after-creation",
+      "title": "Add basic session UX safeguards: validate inputs, display clear errors (invalid code, full session, session not found), and provide a simple way to copy/share the session code after creation.",
+      "reqIds": [
+        "REQ-6"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-apply-a-cohesive-simple-visual-theme-across-the-app-colors-typography-spacing-buttons-inputs-suitable-for-a-minimalist-chat-tool-avoid-blue-purple-as-primary-brand-colors",
+      "title": "Apply a cohesive, simple visual theme across the app (colors, typography, spacing, buttons, inputs) suitable for a minimalist chat tool; avoid blue/purple as primary brand colors.",
+      "reqIds": [
+        "REQ-7"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-fix-the-create-session-flow-so-that-a-user-can-create-a-session-and-receive-a-generated-code-without-internet-identity-authentication-i-e-when-the-caller-principal-is-anonymous-the-system-must-allow-multiple-no-login-users-concurrently-by-using-a-client-provided-unique-participant-identifier-instead-of-relying-on-the-caller-principal-for-participant-identity",
+      "title": "Fix the Create Session flow so that a user can create a session (and receive a generated code) without Internet Identity authentication (i.e., when the caller principal is anonymous). The system must allow multiple no-login users concurrently by using a client-provided unique participant identifier instead of relying on the caller principal for participant identity.",
+      "reqIds": [
+        "REQ-8"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-frontend-session-storage-to-persist-a-per-browser-unique-participantid-and-include-it-in-all-backend-calls-that-require-participant-identity-create-session-join-session-send-message-typing-indicator-ensure-the-you-marker-and-join-notifications-continue-to-behave-correctly-using-this-participantid-not-display-name",
+      "title": "Update frontend session storage to persist a per-browser unique participantId and include it in all backend calls that require participant identity (create session, join session, send message, typing indicator). Ensure the “(you)” marker and join notifications continue to behave correctly using this participantId (not display name).",
+      "reqIds": [
+        "REQ-9"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-make-the-app-s-visual-theme-more-colorful-less-boring-while-keeping-a-cohesive-clean-ui-update-the-palette-and-key-surfaces-background-cards-accents-buttons-focus-rings-so-the-landing-page-and-chat-page-feel-noticeably-more-vibrant-without-using-blue-purple-as-the-primary-brand-color",
+      "title": "Make the app’s visual theme more colorful (less “boring”) while keeping a cohesive, clean UI. Update the palette and key surfaces (background, cards, accents, buttons, focus rings) so the landing page and chat page feel noticeably more vibrant without using blue/purple as the primary brand color.",
+      "reqIds": [
+        "REQ-10"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-increase-the-size-width-of-the-two-landing-page-columns-create-session-and-join-session-so-both-cards-feel-larger-on-desktop-and-update-the-footer-copy-to-include-attribution-to-ishita-ishu-while-keeping-all-user-facing-footer-text-in-english",
+      "title": "Increase the size/width of the two landing page columns (Create Session and Join Session) so both cards feel larger on desktop, and update the footer copy to include attribution to Ishita/Ishu while keeping all user-facing footer text in English.",
+      "reqIds": [
+        "REQ-11"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-create-session-ux-so-that-after-a-user-enters-their-name-and-creates-a-session-the-landing-page-clearly-shows-a-code-generated-confirmation-with-the-generated-code-provides-a-copy-to-clipboard-option-shows-a-session-created-confirmation-state-and-does-not-automatically-enter-the-chat-until-the-user-explicitly-chooses-to-join",
+      "title": "Update the Create Session UX so that after a user enters their name and creates a session, the landing page clearly shows a “Code generated” confirmation with the generated code, provides a copy-to-clipboard option, shows a “Session created” confirmation state, and does not automatically enter the chat until the user explicitly chooses to join.",
+      "reqIds": [
+        "REQ-12"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-chat-ui-to-allow-users-to-attach-and-send-a-photos-images-and-b-generic-files-as-messages-including-basic-previews-in-the-message-list-image-thumbnail-for-images-filename-download-open-control-for-files",
+      "title": "Update the chat UI to allow users to attach and send (a) photos/images and (b) generic files as messages, including basic previews in the message list (image thumbnail for images, filename + download/open control for files).",
+      "reqIds": [
+        "REQ-14"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-support-sending-and-displaying-clickable-links-in-chat-messages-containing-urls-should-render-those-urls-as-clickable-anchors-with-safe-attributes-while-preserving-normal-text-rendering-for-non-url-content",
+      "title": "Support sending and displaying clickable links in chat: messages containing URLs should render those URLs as clickable anchors with safe attributes, while preserving normal text rendering for non-URL content.",
+      "reqIds": [
+        "REQ-15"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-video-call-handoff-capability-for-a-session-participants-can-add-set-a-video-call-url-for-the-session-and-all-participants-can-see-and-open-the-current-video-call-url-from-within-the-chat-ui",
+      "title": "Add a “video call handoff” capability for a session: participants can add/set a video call URL for the session, and all participants can see and open the current video call URL from within the chat UI.",
+      "reqIds": [
+        "REQ-16"
+      ],
+      "version": 1
+    }
+  ],
+  "new_feature_requests": [
+    {
+      "id": "AR-1",
+      "summary": "No-login simple web chat experience (anyone can use it without account/auth flow)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-2",
+      "summary": "Two-column UI: left to create a session by entering name and generating a session code; right to join by entering name and an existing code",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-3",
+      "summary": "Session system with generated codes for sharing and joining",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-4",
+      "summary": "Group chat inside a session with participant cap of 6 people",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-5",
+      "summary": "In-session notifications when a new participant joins (visible to existing participants)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-6",
+      "summary": "Typing indicator (Instagram-style dots) showing when another participant is typing",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-7",
+      "summary": "Display message timestamps in chat",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-9",
+      "summary": "Implement backend session management with generated share codes: creating a session returns a new unique short code and registers the creator as the first participant; joining a session by code registers the participant if capacity allows.",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-10",
+      "summary": "Update visual design to be more colorful (current theme feels too boring) while keeping a cohesive minimalist style",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-11",
+      "summary": "Update footer copy: replace/augment '2026 build with love using caffeine.ai' to include attribution 'by Ishita'/'by Ishu'",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-12",
+      "summary": "Increase the width/size of the Create Session and Join Session columns on the landing page",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-13",
+      "summary": "Support sending photos/images in chat messages",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-14",
+      "summary": "Support sending files/attachments in chat messages",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-15",
+      "summary": "Detect/allow sending clickable links in chat messages",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-16",
+      "summary": "Add option to shift a chat session to a video call (meeting/video call handoff)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-17",
+      "summary": "Improve Create Session UX: after entering name and creating session, show 'Code generated' with the code, provide a copy-to-clipboard button, and show 'Session created' confirmation before joining",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-19",
+      "summary": "Add support for sending image and file attachments as chat messages by extending the backend message model to carry either text content or an attachment payload (including filename, MIME type, and data), and enforce reasonable per-message size limits to prevent oversized payloads.",
+      "reqIds": [
+        "REQ-13"
+      ],
+      "status": "pending"
+    }
+  ],
+  "projectName": "ZELLO",
+  "clarification_mode": "instant",
+  "clarification_rounds": 0
+}

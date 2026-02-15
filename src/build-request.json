@@ -1,0 +1,121 @@
+{
+  "kind": "build_request",
+  "title": "Add attachments, link support, and video-call handoff; improve Create Session confirmation + copy UX",
+  "priority": "normal",
+  "requirements": [
+    {
+      "id": "REQ-12",
+      "text": "Update the Create Session UX so that after a user enters their name and creates a session, the landing page clearly shows a “Code generated” confirmation with the generated code, provides a copy-to-clipboard option, shows a “Session created” confirmation state, and does not automatically enter the chat until the user explicitly chooses to join.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "I also want one more change which is by creating a session after entering your name, the code should be shown as code generated... and there should be option of copying it to the clipboard... and the session then should suggest session created and then I will be able to join the session."
+        ]
+      },
+      "acceptanceCriteria": [
+        "After Create Session succeeds, the UI displays a labeled confirmation section including the text “Code generated” and the generated session code.",
+        "A visible control allows copying the generated code to the clipboard and provides success feedback.",
+        "The app does not auto-navigate into the chat immediately after session creation; instead, it shows a “Session created” confirmation and a clear “Join session” (or equivalent) action.",
+        "Clicking the explicit join action transitions into the chat for the newly created session and persists the session in storage as before.",
+        "All user-facing text for this flow is in English."
+      ]
+    },
+    {
+      "id": "REQ-13",
+      "text": "Add support for sending image and file attachments as chat messages by extending the backend message model to carry either text content or an attachment payload (including filename, MIME type, and data), and enforce reasonable per-message size limits to prevent oversized payloads.",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "I want a few features like you can send photos... then you can also send files"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Backend supports creating and retrieving messages that represent either plain text or an attachment (image/file).",
+        "Each attachment message includes at minimum: sender participantId, sender displayName, timestamp, filename, MIME type, and attachment bytes (or encoded representation suitable for Candid).",
+        "Backend rejects attachment messages that exceed a defined maximum payload size with a clear error message.",
+        "Existing text-only messaging continues to work unchanged for current clients (or is updated in lockstep with the frontend so no runtime errors occur)."
+      ]
+    },
+    {
+      "id": "REQ-14",
+      "text": "Update the chat UI to allow users to attach and send (a) photos/images and (b) generic files as messages, including basic previews in the message list (image thumbnail for images, filename + download/open control for files).",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "I want a few features like you can send photos... then you can also send files"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Chat input area includes an attachment control that lets the user pick an image or file from their device.",
+        "Before sending, the user can see what will be sent (image preview for images; filename for files) and can remove/cancel the attachment before sending.",
+        "Sent image messages render an inline preview in the message list (thumbnail or constrained-size image).",
+        "Sent file messages render with filename and a control to download/open the file from the browser.",
+        "If an attachment is too large or fails to send, the UI shows a clear English error message and does not lose the typed text unnecessarily."
+      ]
+    },
+    {
+      "id": "REQ-15",
+      "text": "Support sending and displaying clickable links in chat: messages containing URLs should render those URLs as clickable anchors with safe attributes, while preserving normal text rendering for non-URL content.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "and you can also send links if possible"
+        ]
+      },
+      "acceptanceCriteria": [
+        "When a message contains an http(s) URL, the URL is rendered as a clickable link in the message bubble.",
+        "Links open in a new tab/window and use safe attributes (e.g., rel=\"noopener noreferrer\").",
+        "Messages without URLs render exactly as normal text (no unwanted formatting changes).",
+        "All user-facing text remains in English."
+      ]
+    },
+    {
+      "id": "REQ-16",
+      "text": "Add a “video call handoff” capability for a session: participants can add/set a video call URL for the session, and all participants can see and open the current video call URL from within the chat UI.",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "you can... shift the meeting to a video call"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Backend stores an optional videoCallUrl (or equivalent) as part of session state and exposes it in session data retrieval.",
+        "Backend provides a method to set/update the session’s videoCallUrl (with basic validation such as requiring http(s)).",
+        "Chat UI provides a clear control to set/update the video call link (English labels).",
+        "When a video call link is set, all participants see a prominent UI element showing the link and a button to open it.",
+        "The feature uses only a user-provided URL (no embedded third-party SDK or real-time calling integration is required)."
+      ]
+    }
+  ],
+  "constraints": [
+    "Backend must remain a single Motoko actor in backend/main.mo (no additional backend services).",
+    "Do not modify any files under frontend/src/components/ui or any path listed in frontend.immutablePaths.",
+    "Use English for all user-facing text.",
+    "Do not introduce WebSockets or real-time chat; keep the existing polling approach.",
+    "No third-party authentication providers; Internet Identity support remains as-is (if present) but the app must work for anonymous users."
+  ],
+  "nonGoals": [
+    "Implementing an actual in-app video calling experience (camera/mic capture, conferencing, or WebRTC signaling).",
+    "Integrating with proprietary video-call provider APIs/SDKs (only accepting and opening a user-supplied URL).",
+    "Unlimited/large-file storage; attachments should be size-limited and handled within the app’s constraints."
+  ],
+  "imageRequirements": {
+    "required": [],
+    "edits": []
+  }
+}
