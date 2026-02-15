@@ -1,33 +1,68 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-15T03:57:36.638Z",
+  "generatedAt": "2026-02-15T04:46:03.590Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 1,
-    "implemented": 1,
+    "total": 3,
+    "implemented": 2,
     "items": [
       {
-        "id": "REQ-17",
-        "summary": "Update the landing page footer copy so the attribution text reads \"by echu ❤️\" (replacing the existing \"by Ishu\"), and remove the heart icon that currently appears between the words \"with\" and \"using\" in the phrase \"Built with [heart] using caffeine.ai\". Keep all other footer text in English and preserve the existing caffeine.ai link URL and tracking parameters.",
+        "id": "REQ-26",
+        "summary": "Fix the backend Create Session flow so it does not cause replica reject errors during normal use (e.g., when a user enters a valid display name and clicks “Create Session”), and ensure the backend returns a structured, user-safe error instead of trapping.",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-27",
+        "summary": "Update the frontend Landing Page Create Session UI to handle the backend’s structured createSession response and to display clear English error messages when the replica rejects a request (including preserving any request ID shown by the agent, when available).",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/pages/LandingPage.tsx"
+          "frontend/src/pages/LandingPage.tsx",
+          "frontend/src/lib/backendErrorMessages.ts",
+          "frontend/src/lib/replicaReject.ts"
         ],
         "matchedFiles": [
+          "frontend/src/pages/LandingPage.tsx",
+          "frontend/src/lib/backendErrorMessages.ts",
+          "frontend/src/lib/replicaReject.ts"
+        ]
+      },
+      {
+        "id": "REQ-28",
+        "summary": "Update any other frontend call sites that rely on backend methods changed in REQ-26 (e.g., joinSession/sendMessage/updateTypingIndicator/getSessionData if their return types are adjusted) so the app compiles and all session/chat flows continue to work end-to-end.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/backend.d.ts",
+          "frontend/src/pages/LandingPage.tsx",
+          "frontend/src/hooks/useSessionPolling.ts",
+          "frontend/src/hooks/useTypingSignal.ts",
+          "frontend/src/pages/ChatPage.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/backend.d.ts",
           "frontend/src/pages/LandingPage.tsx"
         ]
       }
     ]
   },
   "changedFiles": [
+    "backend/main.mo",
+    "backend/migration.mo",
     "build-request.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
+    "frontend/src/backend.d.ts",
+    "frontend/src/backend.ts",
+    "frontend/src/declarations/backend.did.d.ts",
+    "frontend/src/declarations/backend.did.js",
+    "frontend/src/lib/backendErrorMessages.ts",
+    "frontend/src/lib/replicaReject.ts",
     "frontend/src/pages/LandingPage.tsx",
     "project_state.json",
     "scratch/component-selection.json",

@@ -1,11 +1,12 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 9,
+  "projectStateVersion": 17,
   "summary": "Rebuild ZELLO from scratch as a simple no-login web chat: users can create a session with an auto-generated code or join via code, with up to 6 participants, join notifications, typing indicators, and visible timestamps.",
   "architectural_notes": [],
   "known_issues": [
     "Create Session flow fails with error 'anonymous principals cannot create sessions' even after entering a display name; session/code is not created",
-    "Footer copy update not applied: user requests changing attribution from \"by Ishu\" to \"by echu ❤️\" and removing the heart between \"with\" and \"using\""
+    "Footer copy update not applied: user requests changing attribution from \"by Ishu\" to \"by echu ❤️\" and removing the heart between \"with\" and \"using\"",
+    "Create Session still failing at runtime after entering display name; user reports replica returned/rejected request (\"replica return or reject rejection\" with a request ID) when attempting to create a session"
   ],
   "isFixRequest": true,
   "existing_features": [
@@ -128,6 +129,78 @@
         "REQ-17"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-remove-all-video-call-ui-ux-from-the-chat-page-including-the-header-button-s-and-dialog-used-to-set-or-open-a-video-call-link",
+      "title": "Remove all video call UI/UX from the chat page, including the header button(s) and dialog used to set or open a video call link.",
+      "reqIds": [
+        "REQ-19"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-frontend-data-fetching-and-session-polling-logic-to-remove-any-dependency-on-video-call-related-backend-fields-or-methods",
+      "title": "Update frontend data fetching and session polling logic to remove any dependency on video-call-related backend fields or methods.",
+      "reqIds": [
+        "REQ-20"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-an-app-wide-dark-mode-feature-that-lets-users-switch-between-light-dark-and-system-theme-modes-and-apply-the-selected-mode-across-both-the-landing-page-and-chat-page",
+      "title": "Implement an app-wide Dark Mode feature that lets users switch between Light, Dark, and System theme modes, and apply the selected mode across both the Landing page and Chat page.",
+      "reqIds": [
+        "REQ-21"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-theme-toggle-control-to-the-ui-so-users-can-change-the-theme-mode-from-both-the-landingpage-header-and-the-chatpage-header-using-clear-english-labels-and-accessible-controls",
+      "title": "Add a theme toggle control to the UI so users can change the theme mode from both the LandingPage header and the ChatPage header using clear English labels and accessible controls.",
+      "reqIds": [
+        "REQ-22"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-an-in-chat-voice-message-feature-that-lets-a-user-record-audio-from-their-microphone-and-send-it-as-a-chat-message-attachment-voice-note-within-the-current-session-using-the-existing-message-attachment-pipeline",
+      "title": "Add an in-chat voice message feature that lets a user record audio from their microphone and send it as a chat message attachment (voice note) within the current session, using the existing message/attachment pipeline.",
+      "reqIds": [
+        "REQ-23"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-render-received-audio-attachments-in-the-message-list-with-an-inline-audio-player-play-pause-seek-when-an-attachment-has-an-audio-mime-type-and-keep-the-existing-download-action-available",
+      "title": "Render received audio attachments in the message list with an inline audio player (play/pause/seek) when an attachment has an `audio/*` MIME type, and keep the existing download action available.",
+      "reqIds": [
+        "REQ-24"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-attachment-picker-to-allow-selecting-audio-files-for-sending-in-addition-to-existing-accepted-file-types-without-removing-support-for-current-file-types",
+      "title": "Update the attachment picker to allow selecting audio files for sending (in addition to existing accepted file types), without removing support for current file types.",
+      "reqIds": [
+        "REQ-25"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-frontend-landing-page-create-session-ui-to-handle-the-backend-s-structured-createsession-response-and-to-display-clear-english-error-messages-when-the-replica-rejects-a-request-including-preserving-any-request-id-shown-by-the-agent-when-available",
+      "title": "Update the frontend Landing Page Create Session UI to handle the backend’s structured createSession response and to display clear English error messages when the replica rejects a request (including preserving any request ID shown by the agent, when available).",
+      "reqIds": [
+        "REQ-27"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-any-other-frontend-call-sites-that-rely-on-backend-methods-changed-in-req-26-e-g-joinsession-sendmessage-updatetypingindicator-getsessiondata-if-their-return-types-are-adjusted-so-the-app-compiles-and-all-session-chat-flows-continue-to-work-end-to-end",
+      "title": "Update any other frontend call sites that rely on backend methods changed in REQ-26 (e.g., joinSession/sendMessage/updateTypingIndicator/getSessionData if their return types are adjusted) so the app compiles and all session/chat flows continue to work end-to-end.",
+      "reqIds": [
+        "REQ-28"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -218,12 +291,6 @@
       "status": "pending"
     },
     {
-      "id": "AR-16",
-      "summary": "Add option to shift a chat session to a video call (meeting/video call handoff)",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
       "id": "AR-17",
       "summary": "Improve Create Session UX: after entering name and creating session, show 'Code generated' with the code, provide a copy-to-clipboard button, and show 'Session created' confirmation before joining",
       "reqIds": [],
@@ -234,6 +301,34 @@
       "summary": "Add support for sending image and file attachments as chat messages by extending the backend message model to carry either text content or an attachment payload (including filename, MIME type, and data), and enforce reasonable per-message size limits to prevent oversized payloads.",
       "reqIds": [
         "REQ-13"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-20",
+      "summary": "Remove the video call handoff feature from the backend API by deleting video-call-related session fields and methods (no video call URL stored per session, and no API to set it).",
+      "reqIds": [
+        "REQ-18"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-21",
+      "summary": "Add a Dark Mode theme option (toggle/system preference) for the app UI",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-22",
+      "summary": "Add voice messages: allow a user to record their voice and send it as an audio message in the group chat (with playback in the message list).",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-23",
+      "summary": "Fix the backend Create Session flow so it does not cause replica reject errors during normal use (e.g., when a user enters a valid display name and clicks “Create Session”), and ensure the backend returns a structured, user-safe error instead of trapping.",
+      "reqIds": [
+        "REQ-26"
       ],
       "status": "pending"
     }

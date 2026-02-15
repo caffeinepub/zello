@@ -1,22 +1,67 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Update landing page footer attribution and remove extra heart icon",
+  "title": "Fix Create Session UI to handle structured results and replica reject errors",
   "requirements": [
     {
-      "id": "REQ-17",
-      "summary": "Adjust Landing page footer attribution to \"by echu ❤️\" and remove the heart icon between “with” and “using” while preserving the caffeine.ai link URL/UTM parameters and other English copy.",
+      "id": "REQ-27",
+      "summary": "Update Landing Page Create Session UI to handle structured createSession results and show clear English errors for backend and replica reject failures (including request ID when available).",
       "acceptanceCriteria": [
-        "On the Landing page, the footer no longer renders a heart icon between the words \"with\" and \"using\".",
-        "On the Landing page, the footer attribution text is exactly \"by echu ❤️\" (including the heart after echu).",
-        "The caffeine.ai link in the footer remains present and continues to use the existing href format with the same UTM parameters.",
-        "All user-facing footer text remains in English."
+        "When the backend returns an error result for createSession, the Create Session card shows a friendly English error message (via the existing InlineError component) rather than a generic failure.",
+        "When the network/agent returns a replica reject error, the UI displays an English message indicating the request was rejected and includes the request ID text if it is available from the thrown error.",
+        "Successful createSession behavior remains unchanged: the landing page shows the “Code generated” state with the generated code and allows the user to click “Join Session” to enter the chat."
       ],
       "file_operations": [
         {
           "path": "frontend/src/pages/LandingPage.tsx",
           "operation": "modify",
-          "description": "Update the footer text: (1) remove the inline Heart icon currently rendered between “Built with” and “using”, including removing its lucide-react import if no longer used, and (2) change the attribution from \"by Ishu\" to exactly \"by echu ❤️\". Preserve the existing caffeine.ai link href template and its UTM parameters unchanged, and keep the rest of the footer copy in English."
+          "description": "Update Create Session flow to handle the backend’s structured CreateSessionResult (ok/err) instead of assuming a raw string; map BackendError / returned error variants to clear English messages and display them via the existing InlineError component. Add handling for thrown agent/network errors that look like replica reject/rejection errors by extracting and preserving a request ID (when present) and rendering a friendly message that includes it."
+        },
+        {
+          "path": "frontend/src/lib/backendErrorMessages.ts",
+          "operation": "create",
+          "description": "Add a small utility to convert backend structured error values (e.g., BackendError enum and any newly added error cases) into user-safe, clear English strings for display in the UI."
+        },
+        {
+          "path": "frontend/src/lib/replicaReject.ts",
+          "operation": "create",
+          "description": "Add a utility to detect replica reject/rejection errors from thrown exceptions (by inspecting known fields and/or message text) and to extract a request ID when available, returning a user-safe English message for InlineError."
+        }
+      ]
+    },
+    {
+      "id": "REQ-28",
+      "summary": "Update other frontend call sites to match any backend actor signature/type changes from REQ-26 so the app compiles and session/chat flows continue working end-to-end.",
+      "acceptanceCriteria": [
+        "The frontend TypeScript build passes with no type errors related to backend actor method signatures.",
+        "Join session, sending messages (text/files/audio), typing indicators, and session polling continue to function correctly after the backend interface change.",
+        "No user-facing text introduced by these updates is non-English."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/backend.d.ts",
+          "operation": "modify",
+          "description": "Update frontend TypeScript actor interface/types to match the updated backend candid after REQ-26 (e.g., structured result types and expanded error variants) so frontend call sites compile without signature mismatches."
+        },
+        {
+          "path": "frontend/src/pages/LandingPage.tsx",
+          "operation": "modify",
+          "description": "Update Join Session flow to align with any updated joinSession return type (e.g., void vs structured result). Ensure any new/updated error text remains clear English and uses InlineError for display."
+        },
+        {
+          "path": "frontend/src/hooks/useSessionPolling.ts",
+          "operation": "modify",
+          "description": "Update session polling and sendMessage helper to align with any updated getSessionData/sendMessage return types (e.g., structured result vs throwing). Ensure errors surfaced to the Chat UI remain user-safe and English."
+        },
+        {
+          "path": "frontend/src/hooks/useTypingSignal.ts",
+          "operation": "modify",
+          "description": "Update typing indicator calls to align with any updated updateTypingIndicator return type (e.g., structured result vs throwing), preserving the current behavior of silently ignoring non-critical failures."
+        },
+        {
+          "path": "frontend/src/pages/ChatPage.tsx",
+          "operation": "modify",
+          "description": "Adjust ChatPage error handling to match any changes in hook return values and/or backend error shapes, ensuring message send errors and polling errors remain readable English and no chat flow regresses."
         }
       ]
     }

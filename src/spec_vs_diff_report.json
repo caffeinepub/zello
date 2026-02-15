@@ -1,22 +1,62 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-15T03:57:36.635Z",
-  "summary": "REQ-17 appears implemented: footer attribution updated to \"by echu ❤️\" and the heart icon between \"with\" and \"using\" was removed while keeping the caffeine.ai link present (per diff summary). However, the diff summary also indicates unrelated LandingPage Create Session flow/UI changes, which were explicitly out of scope.",
-  "missing_requirements": [],
-  "hallucinated_features": [
+  "generatedAt": "2026-02-15T04:46:03.587Z",
+  "summary": "Diff implements structured createSession results and frontend handling (including replica reject messaging), but backend code generation and error-path reliability appear incomplete, and a migration file was added without clear need. There’s also no clear evidence the candid/interface artifacts were updated consistently across the project.",
+  "missing_requirements": [
     {
-      "description": "Landing page Create Session UX change: after creating a session, UI shows a \"Session created\" confirmation and an explicit \"Join session\" button before entering chat (i.e., changes to session creation/joining flow).",
-      "reason": "BuildRequest non-goals explicitly state no changes to session creation/joining; only footer copy/icon update was requested.",
+      "id": "REQ-26",
+      "requirement": "If cryptographic randomness fails (or is unavailable), session code generation still succeeds using a safe fallback approach, and the backend returns a normal error result only if a unique code cannot be produced after the configured attempts.",
+      "reason": "generateCode() uses Random.crypto().nat64() with no fallback path shown if crypto randomness is unavailable/fails. Also, createSession() returns #ok code unconditionally even if a unique code was not produced (success may remain false).",
       "evidence": [
-        "frontend-file-summaries.txt (LandingPage.tsx summary: \"Create Session shows ... 'Session created' confirmation, and explicit 'Join session' button before entering chat\")",
-        "frontend/src/pages/LandingPage.tsx (modified; truncated)"
+        "backend/main.mo"
+      ]
+    },
+    {
+      "id": "REQ-26",
+      "requirement": "Backend validation failures (empty displayName, empty participantId, failed code generation, session not found/full/etc.) do not use Runtime.trap; they return a structured error value that can be displayed in the UI.",
+      "reason": "joinSession still uses Runtime.trap for validation and session-full/duplicate-participant conditions; no structured error return type is shown for these cases.",
+      "evidence": [
+        "backend/main.mo"
+      ]
+    },
+    {
+      "id": "REQ-26",
+      "requirement": "The backend candid interface is updated consistently with the new structured response types so the frontend can call createSession without mismatched interface errors.",
+      "reason": "The diff shows Motoko type changes and frontend usage, but does not show any update to the generated/declared frontend candid bindings or .did artifacts; cannot confirm interface consistency from provided changes.",
+      "evidence": [
+        "backend/main.mo",
+        "frontend/src/pages/LandingPage.tsx",
+        "frontend/src/lib/backendErrorMessages.ts"
+      ]
+    },
+    {
+      "id": "REQ-28",
+      "requirement": "Update any other frontend call sites that rely on backend methods changed in REQ-26 so the app compiles and all session/chat flows continue to work end-to-end.",
+      "reason": "Only LandingPage createSession handling is shown updated. Since backend now introduces structured types (BackendError/CreateSessionResult) and joinSession still traps, it’s unclear from the diff whether other call sites/bindings were updated to match any interface changes (or to handle structured errors if more methods were changed).",
+      "evidence": [
+        "frontend/src/pages/LandingPage.tsx",
+        "backend/main.mo"
       ]
     }
   ],
-  "confidence": 0.66,
+  "hallucinated_features": [
+    {
+      "description": "Added backend/migration.mo and wired migration run despite no demonstrated state schema upgrade need.",
+      "reason": "BuildRequest constraint says to only create backend/migration.mo if a state schema upgrade is required; the added migration module is a no-op (run(old)=old) and the diff doesn’t show a schema/version upgrade that would require it.",
+      "evidence": [
+        "backend/migration.mo",
+        "backend/main.mo"
+      ]
+    }
+  ],
+  "confidence": 0.74,
   "changed_files": [
+    "backend/main.mo",
+    "backend/migration.mo",
     "frontend-file-summaries.txt",
+    "frontend/src/lib/backendErrorMessages.ts",
+    "frontend/src/lib/replicaReject.ts",
     "frontend/src/pages/LandingPage.tsx",
     "project_state.json"
   ]

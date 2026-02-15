@@ -20,21 +20,30 @@ export interface Message {
     attachment?: Attachment;
     textContent?: string;
 }
+export type CreateSessionResult = {
+    __kind__: "ok";
+    ok: string;
+} | {
+    __kind__: "err";
+    err: BackendError;
+};
 export interface SessionData {
     participants: Array<Participant>;
     messages: Array<Message>;
-    currentVideoCallUrl?: string;
 }
 export interface Attachment {
     data: Uint8Array;
     mimeType: string;
     filename: string;
 }
+export enum BackendError {
+    participantIdEmpty = "participantIdEmpty",
+    displayNameEmpty = "displayNameEmpty"
+}
 export interface backendInterface {
-    createSession(participantId: string, displayName: string): Promise<string>;
+    createSession(participantId: string, displayName: string): Promise<CreateSessionResult>;
     getSessionData(code: string): Promise<SessionData>;
     joinSession(code: string, participantId: string, displayName: string): Promise<void>;
     sendMessage(code: string, participantId: string, content: string | null, displayName: string, attachment: Attachment | null): Promise<void>;
-    setVideoCallUrl(code: string, url: string): Promise<void>;
     updateTypingIndicator(code: string, participantId: string): Promise<void>;
 }

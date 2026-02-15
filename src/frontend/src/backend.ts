@@ -102,53 +102,62 @@ export interface Message {
     attachment?: Attachment;
     textContent?: string;
 }
+export type CreateSessionResult = {
+    __kind__: "ok";
+    ok: string;
+} | {
+    __kind__: "err";
+    err: BackendError;
+};
 export interface SessionData {
     participants: Array<Participant>;
     messages: Array<Message>;
-    currentVideoCallUrl?: string;
 }
 export interface Attachment {
     data: Uint8Array;
     mimeType: string;
     filename: string;
 }
+export enum BackendError {
+    participantIdEmpty = "participantIdEmpty",
+    displayNameEmpty = "displayNameEmpty"
+}
 export interface backendInterface {
-    createSession(participantId: string, displayName: string): Promise<string>;
+    createSession(participantId: string, displayName: string): Promise<CreateSessionResult>;
     getSessionData(code: string): Promise<SessionData>;
     joinSession(code: string, participantId: string, displayName: string): Promise<void>;
     sendMessage(code: string, participantId: string, content: string | null, displayName: string, attachment: Attachment | null): Promise<void>;
-    setVideoCallUrl(code: string, url: string): Promise<void>;
     updateTypingIndicator(code: string, participantId: string): Promise<void>;
 }
-import type { Attachment as _Attachment, Message as _Message, Participant as _Participant, SessionData as _SessionData } from "./declarations/backend.did.d.ts";
+import type { Attachment as _Attachment, BackendError as _BackendError, CreateSessionResult as _CreateSessionResult, Message as _Message, Participant as _Participant, SessionData as _SessionData } from "./declarations/backend.did.d.ts";
 export class Backend implements backendInterface {
     constructor(private actor: ActorSubclass<_SERVICE>, private _uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, private _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, private processError?: (error: unknown) => never){}
-    async createSession(arg0: string, arg1: string): Promise<string> {
+    async createSession(arg0: string, arg1: string): Promise<CreateSessionResult> {
         if (this.processError) {
             try {
                 const result = await this.actor.createSession(arg0, arg1);
-                return result;
+                return from_candid_CreateSessionResult_n1(this._uploadFile, this._downloadFile, result);
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
             const result = await this.actor.createSession(arg0, arg1);
-            return result;
+            return from_candid_CreateSessionResult_n1(this._uploadFile, this._downloadFile, result);
         }
     }
     async getSessionData(arg0: string): Promise<SessionData> {
         if (this.processError) {
             try {
                 const result = await this.actor.getSessionData(arg0);
-                return from_candid_SessionData_n1(this._uploadFile, this._downloadFile, result);
+                return from_candid_SessionData_n5(this._uploadFile, this._downloadFile, result);
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
             const result = await this.actor.getSessionData(arg0);
-            return from_candid_SessionData_n1(this._uploadFile, this._downloadFile, result);
+            return from_candid_SessionData_n5(this._uploadFile, this._downloadFile, result);
         }
     }
     async joinSession(arg0: string, arg1: string, arg2: string): Promise<void> {
@@ -168,28 +177,14 @@ export class Backend implements backendInterface {
     async sendMessage(arg0: string, arg1: string, arg2: string | null, arg3: string, arg4: Attachment | null): Promise<void> {
         if (this.processError) {
             try {
-                const result = await this.actor.sendMessage(arg0, arg1, to_candid_opt_n12(this._uploadFile, this._downloadFile, arg2), arg3, to_candid_opt_n13(this._uploadFile, this._downloadFile, arg4));
+                const result = await this.actor.sendMessage(arg0, arg1, to_candid_opt_n16(this._uploadFile, this._downloadFile, arg2), arg3, to_candid_opt_n17(this._uploadFile, this._downloadFile, arg4));
                 return result;
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.sendMessage(arg0, arg1, to_candid_opt_n12(this._uploadFile, this._downloadFile, arg2), arg3, to_candid_opt_n13(this._uploadFile, this._downloadFile, arg4));
-            return result;
-        }
-    }
-    async setVideoCallUrl(arg0: string, arg1: string): Promise<void> {
-        if (this.processError) {
-            try {
-                const result = await this.actor.setVideoCallUrl(arg0, arg1);
-                return result;
-            } catch (e) {
-                this.processError(e);
-                throw new Error("unreachable");
-            }
-        } else {
-            const result = await this.actor.setVideoCallUrl(arg0, arg1);
+            const result = await this.actor.sendMessage(arg0, arg1, to_candid_opt_n16(this._uploadFile, this._downloadFile, arg2), arg3, to_candid_opt_n17(this._uploadFile, this._downloadFile, arg4));
             return result;
         }
     }
@@ -208,58 +203,31 @@ export class Backend implements backendInterface {
         }
     }
 }
-function from_candid_Message_n8(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _Message): Message {
+function from_candid_BackendError_n3(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _BackendError): BackendError {
+    return from_candid_variant_n4(_uploadFile, _downloadFile, value);
+}
+function from_candid_CreateSessionResult_n1(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _CreateSessionResult): CreateSessionResult {
+    return from_candid_variant_n2(_uploadFile, _downloadFile, value);
+}
+function from_candid_Message_n12(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _Message): Message {
+    return from_candid_record_n13(_uploadFile, _downloadFile, value);
+}
+function from_candid_Participant_n8(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _Participant): Participant {
     return from_candid_record_n9(_uploadFile, _downloadFile, value);
 }
-function from_candid_Participant_n4(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _Participant): Participant {
-    return from_candid_record_n5(_uploadFile, _downloadFile, value);
+function from_candid_SessionData_n5(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _SessionData): SessionData {
+    return from_candid_record_n6(_uploadFile, _downloadFile, value);
 }
-function from_candid_SessionData_n1(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _SessionData): SessionData {
-    return from_candid_record_n2(_uploadFile, _downloadFile, value);
-}
-function from_candid_opt_n10(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [_Attachment]): Attachment | null {
+function from_candid_opt_n10(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [bigint]): bigint | null {
     return value.length === 0 ? null : value[0];
 }
-function from_candid_opt_n11(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [string]): string | null {
+function from_candid_opt_n14(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [_Attachment]): Attachment | null {
     return value.length === 0 ? null : value[0];
 }
-function from_candid_opt_n6(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [bigint]): bigint | null {
+function from_candid_opt_n15(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [string]): string | null {
     return value.length === 0 ? null : value[0];
 }
-function from_candid_record_n2(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
-    participants: Array<_Participant>;
-    messages: Array<_Message>;
-    currentVideoCallUrl: [] | [string];
-}): {
-    participants: Array<Participant>;
-    messages: Array<Message>;
-    currentVideoCallUrl?: string;
-} {
-    return {
-        participants: from_candid_vec_n3(_uploadFile, _downloadFile, value.participants),
-        messages: from_candid_vec_n7(_uploadFile, _downloadFile, value.messages),
-        currentVideoCallUrl: record_opt_to_undefined(from_candid_opt_n11(_uploadFile, _downloadFile, value.currentVideoCallUrl))
-    };
-}
-function from_candid_record_n5(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
-    id: string;
-    displayName: string;
-    lastTypingTimestamp: [] | [bigint];
-    isTyping: boolean;
-}): {
-    id: string;
-    displayName: string;
-    lastTypingTimestamp?: bigint;
-    isTyping: boolean;
-} {
-    return {
-        id: value.id,
-        displayName: value.displayName,
-        lastTypingTimestamp: record_opt_to_undefined(from_candid_opt_n6(_uploadFile, _downloadFile, value.lastTypingTimestamp)),
-        isTyping: value.isTyping
-    };
-}
-function from_candid_record_n9(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+function from_candid_record_n13(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
     displayName: string;
     sender: string;
     timestamp: bigint;
@@ -276,20 +244,76 @@ function from_candid_record_n9(_uploadFile: (file: ExternalBlob) => Promise<Uint
         displayName: value.displayName,
         sender: value.sender,
         timestamp: value.timestamp,
-        attachment: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.attachment)),
-        textContent: record_opt_to_undefined(from_candid_opt_n11(_uploadFile, _downloadFile, value.textContent))
+        attachment: record_opt_to_undefined(from_candid_opt_n14(_uploadFile, _downloadFile, value.attachment)),
+        textContent: record_opt_to_undefined(from_candid_opt_n15(_uploadFile, _downloadFile, value.textContent))
     };
 }
-function from_candid_vec_n3(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Array<_Participant>): Array<Participant> {
-    return value.map((x)=>from_candid_Participant_n4(_uploadFile, _downloadFile, x));
+function from_candid_record_n6(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+    participants: Array<_Participant>;
+    messages: Array<_Message>;
+}): {
+    participants: Array<Participant>;
+    messages: Array<Message>;
+} {
+    return {
+        participants: from_candid_vec_n7(_uploadFile, _downloadFile, value.participants),
+        messages: from_candid_vec_n11(_uploadFile, _downloadFile, value.messages)
+    };
 }
-function from_candid_vec_n7(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Array<_Message>): Array<Message> {
-    return value.map((x)=>from_candid_Message_n8(_uploadFile, _downloadFile, x));
+function from_candid_record_n9(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+    id: string;
+    displayName: string;
+    lastTypingTimestamp: [] | [bigint];
+    isTyping: boolean;
+}): {
+    id: string;
+    displayName: string;
+    lastTypingTimestamp?: bigint;
+    isTyping: boolean;
+} {
+    return {
+        id: value.id,
+        displayName: value.displayName,
+        lastTypingTimestamp: record_opt_to_undefined(from_candid_opt_n10(_uploadFile, _downloadFile, value.lastTypingTimestamp)),
+        isTyping: value.isTyping
+    };
 }
-function to_candid_opt_n12(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: string | null): [] | [string] {
+function from_candid_variant_n2(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+    ok: string;
+} | {
+    err: _BackendError;
+}): {
+    __kind__: "ok";
+    ok: string;
+} | {
+    __kind__: "err";
+    err: BackendError;
+} {
+    return "ok" in value ? {
+        __kind__: "ok",
+        ok: value.ok
+    } : "err" in value ? {
+        __kind__: "err",
+        err: from_candid_BackendError_n3(_uploadFile, _downloadFile, value.err)
+    } : value;
+}
+function from_candid_variant_n4(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+    participantIdEmpty: null;
+} | {
+    displayNameEmpty: null;
+}): BackendError {
+    return "participantIdEmpty" in value ? BackendError.participantIdEmpty : "displayNameEmpty" in value ? BackendError.displayNameEmpty : value;
+}
+function from_candid_vec_n11(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Array<_Message>): Array<Message> {
+    return value.map((x)=>from_candid_Message_n12(_uploadFile, _downloadFile, x));
+}
+function from_candid_vec_n7(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Array<_Participant>): Array<Participant> {
+    return value.map((x)=>from_candid_Participant_n8(_uploadFile, _downloadFile, x));
+}
+function to_candid_opt_n16(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: string | null): [] | [string] {
     return value === null ? candid_none() : candid_some(value);
 }
-function to_candid_opt_n13(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Attachment | null): [] | [_Attachment] {
+function to_candid_opt_n17(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Attachment | null): [] | [_Attachment] {
     return value === null ? candid_none() : candid_some(value);
 }
 export interface CreateActorOptions {

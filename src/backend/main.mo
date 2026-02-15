@@ -4,20 +4,27 @@ import Time "mo:core/Time";
 import List "mo:core/List";
 import Text "mo:core/Text";
 import Order "mo:core/Order";
-import Runtime "mo:core/Runtime";
-import Array "mo:core/Array";
 import Random "mo:core/Random";
+import Array "mo:core/Array";
+import Runtime "mo:core/Runtime";
 import Map "mo:core/Map";
+import Migration "migration";
 import Char "mo:core/Char";
 
-
-
+(with migration = Migration.run)
 actor {
+  type BackendError = { #displayNameEmpty; #participantIdEmpty };
+  type CreateSessionResult = {
+    #ok : Text;
+    #err : BackendError;
+  };
+
+  // State
   let sessions = Map.empty<Text, Session>();
 
   let MAX_PARTICIPANTS = 8;
   let TYPING_INDICATOR_TIMEOUT : Int = 3_000_000_000;
-  let MAX_ATTACHMENT_SIZE = 100_000_000; // 100 MB
+  let MAX_ATTACHMENT_SIZE = 100_000_000;
 
   public type Participant = {
     id : Text;
@@ -43,14 +50,12 @@ actor {
   public type SessionData = {
     participants : [Participant];
     messages : [Message];
-    currentVideoCallUrl : ?Text;
   };
 
   public type Session = {
     participants : List.List<Participant>;
     messages : List.List<Message>;
     code : Text;
-    currentVideoCallUrl : ?Text;
   };
 
   module Message {
@@ -58,6 +63,8 @@ actor {
       Int.compare(message1.timestamp, message2.timestamp);
     };
   };
+
+  // Session logic
 
   func generateCode() : async Text {
     let random = Random.crypto();
@@ -71,16 +78,23 @@ actor {
     firstDigit # firstChar.toText() # lastDigit # secondChar.toText();
   };
 
-  public shared ({ caller }) func createSession(participantId : Text, displayName : Text) : async Text {
-    if (displayName.isEmpty()) { Runtime.trap("Display name cannot be empty") };
-    if (participantId.isEmpty()) { Runtime.trap("Participant ID cannot be empty") };
+  public shared ({ caller }) func createSession(participantId : Text, displayName : Text) : async CreateSessionResult {
+    if (displayName.isEmpty()) {
+      return #err(#displayNameEmpty);
+    };
+    if (participantId.isEmpty()) {
+      return #err(#participantIdEmpty);
+    };
+
     let MAX_ATTEMPTS = 5;
     var attempt : Nat = 0;
     var code : Text = "";
     var success = false;
+
     while (attempt < MAX_ATTEMPTS and not success) {
       code := await generateCode();
-      if (not sessions.containsKey(code)) {
+      let codeExists = sessions.containsKey(code);
+      if (not codeExists) {
         let newParticipant : Participant = {
           id = participantId;
           displayName;
@@ -93,30 +107,32 @@ actor {
           participants = newParticipants;
           messages = newMessages;
           code;
-          currentVideoCallUrl = null;
         };
         sessions.add(code, newSession);
         success := true;
       };
       attempt += 1;
     };
-    if (not success) { Runtime.trap("Failed to generate unique session code") };
-    code;
+
+    return #ok code;
   };
 
   public shared ({ caller }) func joinSession(code : Text, participantId : Text, displayName : Text) : async () {
     if (displayName.isEmpty()) { Runtime.trap("Display name cannot be empty") };
     if (participantId.isEmpty()) { Runtime.trap("Participant ID cannot be empty") };
+
     switch (sessions.get(code)) {
       case (?session) {
         if (session.participants.size() >= MAX_PARTICIPANTS) {
           Runtime.trap("Session is full. Maximum participants reached.");
         };
+
         for (p in session.participants.values()) {
           if (p.id == participantId) {
             Runtime.trap("Participant already in session");
           };
         };
+
         let newParticipant : Participant = {
           id = participantId;
           displayName;
@@ -177,6 +193,7 @@ actor {
 
   public shared ({ caller }) func updateTypingIndicator(code : Text, participantId : Text) : () {
     if (participantId.isEmpty()) { Runtime.trap("Participant ID cannot be empty") };
+
     switch (sessions.get(code)) {
       case (?session) {
         let size = session.participants.size();
@@ -213,22 +230,6 @@ actor {
     };
   };
 
-  public shared ({ caller }) func setVideoCallUrl(code : Text, url : Text) : () {
-    if (url.isEmpty()) { Runtime.trap("Video call URL cannot be empty") };
-    switch (sessions.get(code)) {
-      case (?session) {
-        let updatedSession : Session = {
-          code;
-          participants = session.participants;
-          messages = session.messages;
-          currentVideoCallUrl = ?url;
-        };
-        sessions.add(code, updatedSession);
-      };
-      case (null) { Runtime.trap("Session not found") };
-    };
-  };
-
   public query ({ caller }) func getSessionData(code : Text) : async SessionData {
     switch (sessions.get(code)) {
       case (?session) {
@@ -253,7 +254,6 @@ actor {
         {
           participants;
           messages;
-          currentVideoCallUrl = session.currentVideoCallUrl;
         };
       };
       case (null) { Runtime.trap("Session not found") };

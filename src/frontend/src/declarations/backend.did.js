@@ -8,6 +8,14 @@
 
 import { IDL } from '@icp-sdk/core/candid';
 
+export const BackendError = IDL.Variant({
+  'participantIdEmpty' : IDL.Null,
+  'displayNameEmpty' : IDL.Null,
+});
+export const CreateSessionResult = IDL.Variant({
+  'ok' : IDL.Text,
+  'err' : BackendError,
+});
 export const Participant = IDL.Record({
   'id' : IDL.Text,
   'displayName' : IDL.Text,
@@ -29,11 +37,10 @@ export const Message = IDL.Record({
 export const SessionData = IDL.Record({
   'participants' : IDL.Vec(Participant),
   'messages' : IDL.Vec(Message),
-  'currentVideoCallUrl' : IDL.Opt(IDL.Text),
 });
 
 export const idlService = IDL.Service({
-  'createSession' : IDL.Func([IDL.Text, IDL.Text], [IDL.Text], []),
+  'createSession' : IDL.Func([IDL.Text, IDL.Text], [CreateSessionResult], []),
   'getSessionData' : IDL.Func([IDL.Text], [SessionData], ['query']),
   'joinSession' : IDL.Func([IDL.Text, IDL.Text, IDL.Text], [], []),
   'sendMessage' : IDL.Func(
@@ -41,13 +48,20 @@ export const idlService = IDL.Service({
       [],
       ['oneway'],
     ),
-  'setVideoCallUrl' : IDL.Func([IDL.Text, IDL.Text], [], ['oneway']),
   'updateTypingIndicator' : IDL.Func([IDL.Text, IDL.Text], [], ['oneway']),
 });
 
 export const idlInitArgs = [];
 
 export const idlFactory = ({ IDL }) => {
+  const BackendError = IDL.Variant({
+    'participantIdEmpty' : IDL.Null,
+    'displayNameEmpty' : IDL.Null,
+  });
+  const CreateSessionResult = IDL.Variant({
+    'ok' : IDL.Text,
+    'err' : BackendError,
+  });
   const Participant = IDL.Record({
     'id' : IDL.Text,
     'displayName' : IDL.Text,
@@ -69,11 +83,10 @@ export const idlFactory = ({ IDL }) => {
   const SessionData = IDL.Record({
     'participants' : IDL.Vec(Participant),
     'messages' : IDL.Vec(Message),
-    'currentVideoCallUrl' : IDL.Opt(IDL.Text),
   });
   
   return IDL.Service({
-    'createSession' : IDL.Func([IDL.Text, IDL.Text], [IDL.Text], []),
+    'createSession' : IDL.Func([IDL.Text, IDL.Text], [CreateSessionResult], []),
     'getSessionData' : IDL.Func([IDL.Text], [SessionData], ['query']),
     'joinSession' : IDL.Func([IDL.Text, IDL.Text, IDL.Text], [], []),
     'sendMessage' : IDL.Func(
@@ -81,7 +94,6 @@ export const idlFactory = ({ IDL }) => {
         [],
         ['oneway'],
       ),
-    'setVideoCallUrl' : IDL.Func([IDL.Text, IDL.Text], [], ['oneway']),
     'updateTypingIndicator' : IDL.Func([IDL.Text, IDL.Text], [], ['oneway']),
   });
 };

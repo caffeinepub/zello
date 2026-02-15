@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import LandingPage from './pages/LandingPage';
 import ChatPage from './pages/ChatPage';
 import { getStoredSession, clearStoredSession } from './lib/sessionStorage';
+import { ThemeModeProvider } from './context/ThemeModeContext';
 
 export default function App() {
   const [activeSession, setActiveSession] = useState<{
@@ -28,17 +29,19 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      {activeSession ? (
-        <ChatPage
-          code={activeSession.code}
-          displayName={activeSession.displayName}
-          participantId={activeSession.participantId}
-          onLeave={handleLeaveSession}
-        />
-      ) : (
-        <LandingPage onSessionStart={handleSessionStart} />
-      )}
-    </div>
+    <ThemeModeProvider>
+      <div className="min-h-screen bg-background">
+        {activeSession ? (
+          <ChatPage
+            code={activeSession.code}
+            displayName={activeSession.displayName}
+            participantId={activeSession.participantId}
+            onLeave={handleLeaveSession}
+          />
+        ) : (
+          <LandingPage onSessionStart={handleSessionStart} />
+        )}
+      </div>
+    </ThemeModeProvider>
   );
 }

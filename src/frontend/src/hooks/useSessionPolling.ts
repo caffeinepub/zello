@@ -69,19 +69,11 @@ export function useSessionPolling(code: string, participantId: string, displayNa
     }
   };
 
-  const setVideoCallUrl = async (url: string) => {
-    if (!actor) throw new Error('Not connected');
-    
-    await actor.setVideoCallUrl(code, url);
-    await queryClient.invalidateQueries({ queryKey: ['session', code] });
-  };
-
   return {
     sessionData,
     isLoading,
     error: error ? (error instanceof Error ? error.message : 'Failed to load session') : null,
     sendMessage,
-    setVideoCallUrl,
     isSending,
   };
 }

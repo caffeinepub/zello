@@ -16,6 +16,10 @@ export function isImage(mimeType: string): boolean {
   return mimeType.startsWith('image/');
 }
 
+export function isAudio(mimeType: string): boolean {
+  return mimeType.startsWith('audio/');
+}
+
 export function createBlobUrl(data: Uint8Array, mimeType: string): string {
   // Convert to a new Uint8Array to ensure compatibility with Blob constructor
   const blob = new Blob([new Uint8Array(data)], { type: mimeType });

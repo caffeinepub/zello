@@ -1,36 +1,70 @@
 {
   "kind": "build_request",
-  "title": "Fix footer attribution text and remove heart icon",
-  "priority": "normal",
+  "title": "Fix Create Session failing with replica reject/rejection error and improve error handling",
+  "priority": "high",
   "requirements": [
     {
-      "id": "REQ-17",
-      "text": "Update the landing page footer copy so the attribution text reads \"by echu ❤️\" (replacing the existing \"by Ishu\"), and remove the heart icon that currently appears between the words \"with\" and \"using\" in the phrase \"Built with [heart] using caffeine.ai\". Keep all other footer text in English and preserve the existing caffeine.ai link URL and tracking parameters.",
-      "target": "frontend",
+      "id": "REQ-26",
+      "text": "Fix the backend Create Session flow so it does not cause replica reject errors during normal use (e.g., when a user enters a valid display name and clicks “Create Session”), and ensure the backend returns a structured, user-safe error instead of trapping.",
+      "target": "backend",
       "source": {
         "messageIds": [
-          "recent-messages-4"
+          "msg-4"
         ],
         "quotes": [
-          "The change is not made. As said, Change \"by Ishu\" to\"by echu ❤️\" and remove the heart between with and using"
+          "I'm not able to create a session when entered my name. Please check if there is any error because it is saying the replica return or reject rejection error request ID."
         ]
       },
       "acceptanceCriteria": [
-        "On the Landing page, the footer no longer renders a heart icon between the words \"with\" and \"using\".",
-        "On the Landing page, the footer attribution text is exactly \"by echu ❤️\" (including the heart after echu).",
-        "The caffeine.ai link in the footer remains present and continues to use the existing href format with the same UTM parameters.",
-        "All user-facing footer text remains in English."
+        "Calling createSession with a non-empty participantId and non-empty displayName succeeds and returns a session code without the replica rejecting the request.",
+        "Backend validation failures (empty displayName, empty participantId, failed code generation, session not found/full/etc.) do not use Runtime.trap; they return a structured error value that can be displayed in the UI.",
+        "If cryptographic randomness fails (or is unavailable), session code generation still succeeds using a safe fallback approach, and the backend returns a normal error result only if a unique code cannot be produced after the configured attempts.",
+        "The backend candid interface is updated consistently with the new structured response types so the frontend can call createSession without mismatched interface errors."
+      ]
+    },
+    {
+      "id": "REQ-27",
+      "text": "Update the frontend Landing Page Create Session UI to handle the backend’s structured createSession response and to display clear English error messages when the replica rejects a request (including preserving any request ID shown by the agent, when available).",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "it is saying the replica return or reject rejection error request ID."
+        ]
+      },
+      "acceptanceCriteria": [
+        "When the backend returns an error result for createSession, the Create Session card shows a friendly English error message (via the existing InlineError component) rather than a generic failure.",
+        "When the network/agent returns a replica reject error, the UI displays an English message indicating the request was rejected and includes the request ID text if it is available from the thrown error.",
+        "Successful createSession behavior remains unchanged: the landing page shows the “Code generated” state with the generated code and allows the user to click “Join Session” to enter the chat."
+      ]
+    },
+    {
+      "id": "REQ-28",
+      "text": "Update any other frontend call sites that rely on backend methods changed in REQ-26 (e.g., joinSession/sendMessage/updateTypingIndicator/getSessionData if their return types are adjusted) so the app compiles and all session/chat flows continue to work end-to-end.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ]
+      },
+      "acceptanceCriteria": [
+        "The frontend TypeScript build passes with no type errors related to backend actor method signatures.",
+        "Join session, sending messages (text/files/audio), typing indicators, and session polling continue to function correctly after the backend interface change.",
+        "No user-facing text introduced by these updates is non-English."
       ]
     }
   ],
   "constraints": [
-    "Do not edit any files under frontend/src/components/ui (compose existing components instead).",
-    "Do not change backend code; this is a frontend-only copy/icon update."
+    "Backend must remain a single Motoko actor in backend/main.mo; do not introduce additional backend services.",
+    "Only create backend/migration.mo if a state schema upgrade is required; otherwise avoid migrations.",
+    "Do not edit files under frontend/src/components/ui or any frontend immutable paths listed in SYSTEM_CONTEXT."
   ],
   "nonGoals": [
-    "No changes to session creation/joining, chat functionality, or backend persistence.",
-    "No redesign of the footer beyond the specified copy and icon removal.",
-    "No changes to the caffeine.ai link destination or tracking parameters."
+    "Adding new product features beyond fixing Create Session reliability and error reporting.",
+    "Changing the visual theme or layout unrelated to the Create Session failure.",
+    "Introducing external databases, third-party auth providers, or real-time websocket infrastructure."
   ],
   "imageRequirements": {
     "required": [],

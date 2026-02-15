@@ -8,6 +8,9 @@ import { storeSession, getOrCreateParticipantId } from '../lib/sessionStorage';
 import { Loader2, MessageSquare, CheckCircle2 } from 'lucide-react';
 import CopyCodeButton from '../components/actions/CopyCodeButton';
 import InlineError from '../components/feedback/InlineError';
+import ThemeToggle from '../components/theme/ThemeToggle';
+import { getBackendErrorMessage } from '../lib/backendErrorMessages';
+import { handleReplicaRejectError } from '../lib/replicaReject';
 
 interface LandingPageProps {
   onSessionStart: (code: string, displayName: string, participantId: string) => void;
@@ -46,12 +49,27 @@ export default function LandingPage({ onSessionStart }: LandingPageProps) {
     setCreateLoading(true);
     try {
       const participantId = getOrCreateParticipantId();
-      const code = await actor.createSession(participantId, createName.trim());
-      setGeneratedCode(code);
-      setCreatedParticipantId(participantId);
-      setSessionCreated(true);
+      const result = await actor.createSession(participantId, createName.trim());
+      
+      // Handle structured result
+      if (result.__kind__ === 'ok') {
+        setGeneratedCode(result.ok);
+        setCreatedParticipantId(participantId);
+        setSessionCreated(true);
+      } else {
+        // Backend returned an error
+        const errorMessage = getBackendErrorMessage(result.err);
+        setCreateError(errorMessage);
+      }
     } catch (error) {
-      setCreateError(error instanceof Error ? error.message : 'Failed to create session');
+      // Check if this is a replica reject error
+      const replicaError = handleReplicaRejectError(error);
+      if (replicaError) {
+        setCreateError(replicaError);
+      } else {
+        // Generic error handling
+        setCreateError(error instanceof Error ? error.message : 'Failed to create session. Please try again.');
+      }
     } finally {
       setCreateLoading(false);
     }
@@ -89,15 +107,26 @@ export default function LandingPage({ onSessionStart }: LandingPageProps) {
       storeSession(joinCode.trim().toUpperCase(), joinName.trim(), participantId);
       onSessionStart(joinCode.trim().toUpperCase(), joinName.trim(), participantId);
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to join session';
-      if (message.includes('not found')) {
-        setJoinError('Session not found. Please check the code.');
-      } else if (message.includes('full')) {
-        setJoinError('Session is full (maximum 8 participants).');
-      } else if (message.includes('already in session')) {
-        setJoinError('You are already in this session.');
+      // Check if this is a replica reject error
+      const replicaError = handleReplicaRejectError(error);
+      if (replicaError) {
+        setJoinError(replicaError);
       } else {
-        setJoinError(message);
+        // Parse backend error messages
+        const message = error instanceof Error ? error.message : 'Failed to join session';
+        if (message.includes('not found')) {
+          setJoinError('Session not found. Please check the code.');
+        } else if (message.includes('full')) {
+          setJoinError('Session is full (maximum 8 participants).');
+        } else if (message.includes('already in session')) {
+          setJoinError('You are already in this session.');
+        } else if (message.includes('Display name cannot be empty')) {
+          setJoinError('Please enter your name.');
+        } else if (message.includes('Participant ID')) {
+          setJoinError('Session error. Please refresh the page and try again.');
+        } else {
+          setJoinError(message);
+        }
       }
     } finally {
       setJoinLoading(false);
@@ -109,16 +138,19 @@ export default function LandingPage({ onSessionStart }: LandingPageProps) {
       {/* Header */}
       <header className="border-b-2 border-primary/20 bg-gradient-to-r from-primary/5 via-secondary/5 to-accent/5">
         <div className="container mx-auto px-4 py-8">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-primary/10 rounded-xl border-2 border-primary/30">
-              <MessageSquare className="h-8 w-8 text-primary" />
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-primary/10 rounded-xl border-2 border-primary/30">
+                <MessageSquare className="h-8 w-8 text-primary" />
+              </div>
+              <div>
+                <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
+                  ZELLO
+                </h1>
+                <p className="text-muted-foreground mt-1">Simple group chat. No login required.</p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
-                ZELLO
-              </h1>
-              <p className="text-muted-foreground mt-1">Simple group chat. No login required.</p>
-            </div>
+            <ThemeToggle />
           </div>
         </div>
       </header>

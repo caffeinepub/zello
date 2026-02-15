@@ -15,6 +15,10 @@ export interface Attachment {
   'mimeType' : string,
   'filename' : string,
 }
+export type BackendError = { 'participantIdEmpty' : null } |
+  { 'displayNameEmpty' : null };
+export type CreateSessionResult = { 'ok' : string } |
+  { 'err' : BackendError };
 export interface Message {
   'displayName' : string,
   'sender' : string,
@@ -31,17 +35,15 @@ export interface Participant {
 export interface SessionData {
   'participants' : Array<Participant>,
   'messages' : Array<Message>,
-  'currentVideoCallUrl' : [] | [string],
 }
 export interface _SERVICE {
-  'createSession' : ActorMethod<[string, string], string>,
+  'createSession' : ActorMethod<[string, string], CreateSessionResult>,
   'getSessionData' : ActorMethod<[string], SessionData>,
   'joinSession' : ActorMethod<[string, string, string], undefined>,
   'sendMessage' : ActorMethod<
     [string, string, [] | [string], string, [] | [Attachment]],
     undefined
   >,
-  'setVideoCallUrl' : ActorMethod<[string, string], undefined>,
   'updateTypingIndicator' : ActorMethod<[string, string], undefined>,
 }
 export declare const idlService: IDL.ServiceClass;

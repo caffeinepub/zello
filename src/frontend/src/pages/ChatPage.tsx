@@ -1,19 +1,16 @@
 import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Separator } from '@/components/ui/separator';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Label } from '@/components/ui/label';
-import { LogOut, Users, MessageSquare, Video, ExternalLink, Download, Image as ImageIcon, File } from 'lucide-react';
+import { LogOut, Users, MessageSquare, Download, File } from 'lucide-react';
 import { useSessionPolling } from '../hooks/useSessionPolling';
 import { useTypingSignal } from '../hooks/useTypingSignal';
 import ParticipantList from '../components/chat/ParticipantList';
 import AttachmentComposer from '../components/chat/AttachmentComposer';
 import { formatTimestamp } from '../lib/time';
 import { linkify } from '../lib/linkify';
-import { createBlobUrl, isImage, formatFileSize } from '../lib/attachments';
+import { createBlobUrl, isImage, isAudio, formatFileSize } from '../lib/attachments';
 import InlineError from '../components/feedback/InlineError';
+import ThemeToggle from '../components/theme/ThemeToggle';
 import type { Message } from '../backend';
 
 interface ChatPageProps {
@@ -26,14 +23,10 @@ interface ChatPageProps {
 export default function ChatPage({ code, displayName, participantId, onLeave }: ChatPageProps) {
   const [messageInput, setMessageInput] = useState('');
   const [sendError, setSendError] = useState('');
-  const [videoCallUrl, setVideoCallUrl] = useState('');
-  const [videoCallDialogOpen, setVideoCallDialogOpen] = useState(false);
-  const [videoCallError, setVideoCallError] = useState('');
-  const [isSettingVideoCall, setIsSettingVideoCall] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const { sessionData, isLoading, error, sendMessage, setVideoCallUrl: updateVideoCallUrl, isSending } = useSessionPolling(
+  const { sessionData, isLoading, error, sendMessage, isSending } = useSessionPolling(
     code,
     participantId,
     displayName
@@ -59,31 +52,6 @@ export default function ChatPage({ code, displayName, participantId, onLeave }: 
       if (text) {
         setMessageInput(text);
       }
-    }
-  };
-
-  const handleSetVideoCall = async () => {
-    setVideoCallError('');
-    
-    if (!videoCallUrl.trim()) {
-      setVideoCallError('Please enter a video call URL');
-      return;
-    }
-
-    if (!videoCallUrl.startsWith('http://') && !videoCallUrl.startsWith('https://')) {
-      setVideoCallError('URL must start with http:// or https://');
-      return;
-    }
-
-    setIsSettingVideoCall(true);
-    try {
-      await updateVideoCallUrl(videoCallUrl.trim());
-      setVideoCallDialogOpen(false);
-      setVideoCallUrl('');
-    } catch (error) {
-      setVideoCallError(error instanceof Error ? error.message : 'Failed to set video call URL');
-    } finally {
-      setIsSettingVideoCall(false);
     }
   };
 
@@ -179,9 +147,32 @@ export default function ChatPage({ code, displayName, participantId, onLeave }: 
                       </Button>
                     </div>
                   </div>
+                ) : isAudio(msg.attachment!.mimeType) ? (
+                  <div className="space-y-2">
+                    <audio
+                      src={createBlobUrl(msg.attachment!.data, msg.attachment!.mimeType)}
+                      controls
+                      className="w-full max-w-sm"
+                    />
+                    <div className="flex items-center justify-between text-xs text-muted-foreground">
+                      <span className="truncate">{msg.attachment!.filename}</span>
+                      <Button
+                        onClick={() => handleDownloadAttachment(
+                          msg.attachment!.data,
+                          msg.attachment!.filename,
+                          msg.attachment!.mimeType
+                        )}
+                        variant="ghost"
+                        size="sm"
+                        className="h-6 px-2"
+                      >
+                        <Download className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  </div>
                 ) : (
-                  <div className="flex items-center gap-2 p-2 bg-muted rounded border border-border">
-                    <File className="h-8 w-8 text-primary shrink-0" />
+                  <div className="flex items-center gap-2 p-3 bg-muted/50 rounded border-2 border-border">
+                    <File className="h-8 w-8 text-muted-foreground shrink-0" />
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium truncate">{msg.attachment!.filename}</p>
                       <p className="text-xs text-muted-foreground">
@@ -196,6 +187,7 @@ export default function ChatPage({ code, displayName, participantId, onLeave }: 
                       )}
                       variant="ghost"
                       size="sm"
+                      className="shrink-0"
                     >
                       <Download className="h-4 w-4" />
                     </Button>
@@ -211,113 +203,54 @@ export default function ChatPage({ code, displayName, participantId, onLeave }: 
     return renderedMessages;
   };
 
-  if (error) {
-    return (
-      <div className="min-h-screen flex items-center justify-center p-4">
-        <div className="text-center space-y-4 max-w-md">
-          <InlineError message={error} />
-          <Button onClick={onLeave} variant="outline">
-            Return to Home
-          </Button>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="h-screen flex flex-col">
       {/* Header */}
-      <header className="border-b-2 border-primary/20 bg-gradient-to-r from-primary/5 via-secondary/5 to-accent/5 px-4 py-3 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="p-1.5 bg-primary/10 rounded-lg border-2 border-primary/30">
-            <MessageSquare className="h-5 w-5 text-primary" />
+      <header className="border-b-2 border-primary/20 bg-gradient-to-r from-primary/5 via-secondary/5 to-accent/5 px-6 py-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-primary/10 rounded-lg border-2 border-primary/30">
+              <MessageSquare className="h-6 w-6 text-primary" />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
+                ZELLO
+              </h1>
+              <p className="text-xs text-muted-foreground">Session: {code}</p>
+            </div>
           </div>
-          <div>
-            <h1 className="font-bold text-lg bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-              ZELLO
-            </h1>
-            <p className="text-xs text-muted-foreground">
-              Session: <code className="font-mono font-semibold text-primary">{code}</code>
-            </p>
-          </div>
-        </div>
-        <div className="flex items-center gap-2">
-          {/* Video Call Button */}
-          {sessionData?.currentVideoCallUrl ? (
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
             <Button
-              onClick={() => window.open(sessionData.currentVideoCallUrl, '_blank', 'noopener,noreferrer')}
-              variant="default"
+              onClick={onLeave}
+              variant="outline"
               size="sm"
-              className="border-2"
+              className="gap-2"
             >
-              <Video className="h-4 w-4 mr-2" />
-              Join Video Call
-              <ExternalLink className="h-3 w-3 ml-1" />
+              <LogOut className="h-4 w-4" />
+              Leave
             </Button>
-          ) : (
-            <Dialog open={videoCallDialogOpen} onOpenChange={setVideoCallDialogOpen}>
-              <DialogTrigger asChild>
-                <Button variant="outline" size="sm" className="border-2">
-                  <Video className="h-4 w-4 mr-2" />
-                  Set Video Call
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Set Video Call URL</DialogTitle>
-                  <DialogDescription>
-                    Enter a video call link (e.g., Zoom, Google Meet, etc.) for all participants to join
-                  </DialogDescription>
-                </DialogHeader>
-                <div className="space-y-4 py-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="video-url">Video Call URL</Label>
-                    <Input
-                      id="video-url"
-                      placeholder="https://meet.google.com/..."
-                      value={videoCallUrl}
-                      onChange={(e) => setVideoCallUrl(e.target.value)}
-                      onKeyDown={(e) => e.key === 'Enter' && handleSetVideoCall()}
-                    />
-                  </div>
-                  {videoCallError && <InlineError message={videoCallError} />}
-                </div>
-                <DialogFooter>
-                  <Button
-                    onClick={handleSetVideoCall}
-                    disabled={isSettingVideoCall}
-                  >
-                    {isSettingVideoCall ? 'Setting...' : 'Set Video Call'}
-                  </Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
-          )}
-          <Button onClick={onLeave} variant="ghost" size="sm" className="border-2 border-transparent hover:border-primary/20">
-            <LogOut className="h-4 w-4 mr-2" />
-            Leave
-          </Button>
+          </div>
         </div>
       </header>
 
-      {/* Main Chat Area */}
+      {/* Main Content */}
       <div className="flex-1 flex overflow-hidden">
-        {/* Messages */}
+        {/* Messages Area */}
         <div className="flex-1 flex flex-col min-w-0">
-          <ScrollArea className="flex-1 px-4 py-4" ref={scrollRef}>
+          {error && (
+            <div className="p-4 border-b-2 border-destructive/20 bg-destructive/5">
+              <InlineError message={error} />
+            </div>
+          )}
+
+          <ScrollArea className="flex-1 px-6 py-4">
             {isLoading && !sessionData ? (
               <div className="flex items-center justify-center h-full text-muted-foreground">
                 Loading messages...
               </div>
-            ) : sessionData?.messages.length === 0 ? (
-              <div className="flex items-center justify-center h-full text-muted-foreground text-center">
-                <div>
-                  <MessageSquare className="h-12 w-12 mx-auto mb-2 opacity-50" />
-                  <p>No messages yet. Start the conversation!</p>
-                </div>
-              </div>
             ) : (
-              <div className="space-y-1">
+              <div>
                 {renderMessages()}
                 <div ref={messagesEndRef} />
               </div>
@@ -325,9 +258,9 @@ export default function ChatPage({ code, displayName, participantId, onLeave }: 
           </ScrollArea>
 
           {/* Message Input */}
-          <div className="border-t-2 border-primary/20 bg-gradient-to-r from-primary/5 via-secondary/5 to-accent/5 p-4">
+          <div className="border-t-2 border-primary/20 p-4 bg-gradient-to-r from-primary/5 via-secondary/5 to-accent/5">
             {sendError && (
-              <div className="mb-2">
+              <div className="mb-3">
                 <InlineError message={sendError} />
               </div>
             )}
@@ -335,20 +268,28 @@ export default function ChatPage({ code, displayName, participantId, onLeave }: 
               messageInput={messageInput}
               onMessageInputChange={setMessageInput}
               onSend={handleSendMessage}
-              disabled={isSending}
               onTyping={handleTyping}
               onClearTyping={clearTyping}
+              disabled={isSending}
             />
           </div>
         </div>
 
         {/* Participants Sidebar */}
-        <div className="w-64 border-l-2 border-primary/20 bg-gradient-to-b from-primary/5 to-secondary/5 hidden md:block">
-          <ParticipantList
-            participants={sessionData?.participants || []}
-            currentUserId={participantId}
-          />
-        </div>
+        <aside className="w-64 border-l-2 border-primary/20 bg-gradient-to-b from-primary/5 via-secondary/5 to-accent/5 flex flex-col">
+          <div className="p-4 border-b-2 border-primary/20">
+            <h2 className="font-semibold flex items-center gap-2 text-foreground">
+              <Users className="h-5 w-5 text-primary" />
+              Participants ({sessionData?.participants.length || 0})
+            </h2>
+          </div>
+          <ScrollArea className="flex-1">
+            <ParticipantList
+              participants={sessionData?.participants || []}
+              currentUserId={participantId}
+            />
+          </ScrollArea>
+        </aside>
       </div>
     </div>
   );

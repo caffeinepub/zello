@@ -2,8 +2,28 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-update-the-landing-page-footer-copy-so-the-attribution-text-reads-by-echu-replacing-the-existing-by-ishu-and-remove-the-heart-icon-that-currently-appears-between-the-words-with-and-using-in-the-phrase-built-with-heart-using-caffeine-ai-keep-all-other-footer-text-in-english-and-preserve-the-existing-caffeine-ai-link-url-and-tracking-parameters",
-      "featureTitle": "Update the landing page footer copy so the attribution text reads \"by echu ❤️\" (replacing the existing \"by Ishu\"), and remove the heart icon that currently appears between the words \"with\" and \"using\" in the phrase \"Built with [heart] using caffeine.ai\". Keep all other footer text in English and preserve the existing caffeine.ai link URL and tracking parameters.",
+      "featureId": "feature-update-the-frontend-landing-page-create-session-ui-to-handle-the-backend-s-structured-createsession-response-and-to-display-clear-english-error-messages-when-the-replica-rejects-a-request-including-preserving-any-request-id-shown-by-the-agent-when-available",
+      "featureTitle": "Update the frontend Landing Page Create Session UI to handle the backend’s structured createSession response and to display clear English error messages when the replica rejects a request (including preserving any request ID shown by the agent, when available).",
+      "files": [
+        "frontend/src/lib/backendErrorMessages.ts",
+        "frontend/src/lib/replicaReject.ts",
+        "frontend/src/pages/LandingPage.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-27"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-update-any-other-frontend-call-sites-that-rely-on-backend-methods-changed-in-req-26-e-g-joinsession-sendmessage-updatetypingindicator-getsessiondata-if-their-return-types-are-adjusted-so-the-app-compiles-and-all-session-chat-flows-continue-to-work-end-to-end",
+      "featureTitle": "Update any other frontend call sites that rely on backend methods changed in REQ-26 (e.g., joinSession/sendMessage/updateTypingIndicator/getSessionData if their return types are adjusted) so the app compiles and all session/chat flows continue to work end-to-end.",
       "files": [
         "frontend/src/pages/LandingPage.tsx"
       ],
@@ -15,7 +35,7 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-17"
+        "REQ-28"
       ],
       "confidence": "high"
     }
